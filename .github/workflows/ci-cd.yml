@@ -45,8 +45,8 @@ jobs:
           context: ./src/${{ matrix.service }}
           push: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
+            mohamedsharaf123/${{ matrix.service }}:latest
+            mohamedsharaf123/${{ matrix.service }}:${{ github.sha }}
 
   # ==========================================
   # 🚀 JOB 2: Deploy to AWS EC2 via SSH
