@@ -1,4 +1,4 @@
-name: CI/CD Pipeline - Google Online Boutique
+name: CI/CD Pipeline - Google Online Boutique.
 
 on:
   push:
