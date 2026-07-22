@@ -63,10 +63,9 @@ jobs:
       - name: SSH and Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
+          host: "18.207.93.9"
+          username: "ubuntu"
           key: ${{ secrets.EC2_SSH_KEY }}
-          key_base64: true  # 👈 أهم سطر
           script: |
             docker compose down
             docker compose pull
