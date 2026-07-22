@@ -67,6 +67,7 @@ jobs:
           username: "ubuntu"
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            cd microservices-demo
             docker compose down
             docker compose pull
             docker compose up -d
