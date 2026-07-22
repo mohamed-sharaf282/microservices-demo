@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  redis-cart:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  cartservice:
+    image: mohamedsharaf123/cartservice:latest
+    ports:
+      - "7070:7070"
+    environment:
+      - REDIS_ADDR=redis-cart:6379
+
+  productcatalogservice:
+    image: mohamedsharaf123/productcatalogservice:latest
+    ports:
+      - "3550:3550"
+
+  currencyservice:
+    image: mohamedsharaf123/currencyservice:latest
+    ports:
+      - "7000:7000"
+
+  paymentservice:
+    image: mohamedsharaf123/paymentservice:latest
+    ports:
+      - "50051:50051"
+
+  shippingservice:
+    image: mohamedsharaf123/shippingservice:latest
+    ports:
+      - "50050:50050"
+
+  emailservice:
+    image: mohamedsharaf123/emailservice:latest
+    ports:
+      - "8080:8080"
+
+  checkoutservice:
+    image: mohamedsharaf123/checkoutservice:latest
+    ports:
+      - "5050:5050"
+    environment:
+      - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:3550
+      - SHIPPING_SERVICE_ADDR=shippingservice:50050
+      - PAYMENT_SERVICE_ADDR=paymentservice:50051
+      - EMAIL_SERVICE_ADDR=emailservice:8080
+      - CURRENCY_SERVICE_ADDR=currencyservice:7000
+      - CART_SERVICE_ADDR=cartservice:7070
+
+  recommendationservice:
+    image: mohamedsharaf123/recommendationservice:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:3550
+
+  adservice:
+    image: mohamedsharaf123/adservice:latest
+    ports:
+      - "9555:9555"
+
+  frontend:
+    image: mohamedsharaf123/frontend:latest
+    ports:
+      - "80:8080"
+    environment:
+      - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:3550
+      - CURRENCY_SERVICE_ADDR=currencyservice:7000
+      - CART_SERVICE_ADDR=cartservice:7070
+      - RECOMMENDATION_SERVICE_ADDR=recommendationservice:8081
+      - CHECKOUT_SERVICE_ADDR=checkoutservice:5050
+      - SHIPPING_SERVICE_ADDR=shippingservice:50050
+      - AD_SERVICE_ADDR=adservice:9555
