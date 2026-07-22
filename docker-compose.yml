@@ -22,27 +22,36 @@ services:
     image: mohamedsharaf123/currencyservice:latest
     ports:
       - "7000:7000"
+    environment:
+      - PORT=7000
 
   paymentservice:
     image: mohamedsharaf123/paymentservice:latest
     ports:
       - "50051:50051"
+    environment:
+      - PORT=50051
 
   shippingservice:
     image: mohamedsharaf123/shippingservice:latest
     ports:
       - "50050:50050"
+    environment:
+      - PORT=50050
 
   emailservice:
     image: mohamedsharaf123/emailservice:latest
     ports:
       - "8080:8080"
+    environment:
+      - PORT=8080
 
   checkoutservice:
     image: mohamedsharaf123/checkoutservice:latest
     ports:
       - "5050:5050"
     environment:
+      - PORT=5050
       - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:3550
       - SHIPPING_SERVICE_ADDR=shippingservice:50050
       - PAYMENT_SERVICE_ADDR=paymentservice:50051
@@ -55,12 +64,15 @@ services:
     ports:
       - "8081:8081"
     environment:
+      - PORT=8081
       - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:3550
 
   adservice:
     image: mohamedsharaf123/adservice:latest
     ports:
       - "9555:9555"
+    environment:
+      - PORT=9555
 
   frontend:
     image: mohamedsharaf123/frontend:latest
@@ -75,3 +87,4 @@ services:
       - CHECKOUT_SERVICE_ADDR=checkoutservice:5050
       - SHIPPING_SERVICE_ADDR=shippingservice:50050
       - AD_SERVICE_ADDR=adservice:9555
+      - SHOPPING_ASSISTANT_SERVICE_ADDR="" # 👈 السطر ده اللي كان موقف الفروت اند تماماً!
