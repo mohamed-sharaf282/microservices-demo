@@ -63,35 +63,10 @@ jobs:
       - name: SSH and Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: "18.207.93.9"  # ضع الـ Public IP الخاص بسيرفرك هنا
-          username: ubuntu
-          key: "-----BEGIN RSA PRIVATE KEY-----
-                MIIEpQIBAAKCAQEAxxRgER9clpXChpOy1t3WkiqXOpRMSpyn9UockN7s2pA1yN6K
-                b9mNcsWZvTWPrx6+nCTtGwax1Y7xOoGFuAnv0TezOZp6008oQiiMZQlvJpg+5cgo
-                oN5V14A/V6WiNsBBmYmwWWBHyZsDlIWaYaIbdTE2IH7cLfmGB0sSfkJeGg7xp6+K
-                yYfwS4ESUgn3tTl4zWDw4chUedKkNebty7u0RjXCykinAirE/DOBspvZqOwP1oEE
-                oSF/9JpJlssXF5jTxDetLvDDldaiDAU+5ATZbaztpFB0TzfwIAAaAXdBjxU7/4Fm
-                kexpPuyZghhKRIBfVYur+2rPLyETH8wyumr9KwIDAQABAoIBAQCwJ4FR5VRCEsYL
-                2slWgvkIYRNrzCktpCyiSS+5qOggBZbx5KjOi8wzkFGXMLuxEx1KgQok7emRtGgT
-                guRVksVXdVfrUpv4OoS+9a41AQIPPov5OwFoRxPiGiLyZSeCFuB1AXa/vwgGhlnG
-                o+mVFqIBMshYPKiLLc3AylbUzdkCaEM7fLR5wy5QarZVFsOGGc4/11C+qVFjMLfX
-                NZhZVFrhoVEyviZ7n47XWDaZZGHVpDoqfQ9qFngRYqAjjFZQcXRXbP+0RVP5Nquf
-                oLH59TGVNdkPsBKex2mYimxDBgJHxxeLRASkUvRdJ0EUlCtNvOo30KkzksFdoiNN
-                cXXxPsGBAoGBAOIcAGLMv0AYNOj2dEJmNNWCBma0s0Mj7AeknlhvvI7fPwhyiuQS
-                U/YsEOZzyMAiFab3RmEaL1MIPKQNz50uP8HaWFbpxQUnr1A70PgVDzxWRyWtIO0o
-                v2HDy1mH+sIEhAqPctNT7nSsoyxooY4pPlBZz8ughFJ7LK4Rzy8sSb2hAoGBAOFl
-                oYq4praqQaJKelydz+Hk8BxwcHUleQLlrve87+o6xfGD/J6LVlDYGmwOOZCfWMx8
-                10SA0bFH9vma5z/Uh6hgFpfotTiI0s//YrOo3ZCvSYkc+mJYx28GoBw6pfr9pgYj
-                YMiNAWeNbHWDrCbDNFIU0oTAhgimxCO4mUGqNA9LAoGBAJ4wzwhQjQFvrhzKyH3n
-                +dDink3e4If5qtmSD4J58ibXA8eKM6frNrjFDbHdkbbyYcmluKSY6EEkQyDX1Mf4
-                In0ioKl19fRsVlhA8SuPuFATYMV4QdAKsRLaI/voicSR2jt1LvWxA+S3H5YjQdwu
-                +LzIiPvCurDmIlVKenRbfN/hAoGAZw597xyAdXKhMeAV1HT/kMyJkKdEc/ufOdjk
-                yDcmBxW6XbQ4dBFHdQ1p/0/9uAdzpYPLNXIk7ob2AKh35XJ6WF0e13Q6L9A3e4zM
-                h1LFg5rx53RNc1weS8Bewql6LKl/GL1iSjBWnQ9HsO90bgDA0mrc2n/giOIfOin0
-                QNbemMMCgYEAoQX7bu17G7COiWxwKN4/8ovAR8JKbI4D9EKzERzwQEbWCn6S5OMB
-                cgyodmiwBfooMz7rIzyaDpLzx4mQSUpKBTqiORtpHUhRM/rjfBaiHu1WOcXOO0N3
-                rmtchg3hW5NjPVNoZwYG5+2snO/uKPXmt4H54UfVQUEPMlugvhvC4fg=
-                -----END RSA PRIVATE KEY-----"
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          key_base64: true  # 👈 أهم سطر
           script: |
             docker compose down
             docker compose pull
