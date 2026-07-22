@@ -42,8 +42,9 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: ./src/${{ matrix.service }}
-          push: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+          context: ${{ matrix.service == 'cartservice' && './src/cartservice/src' || format('./src/{0}', matrix.service) }}
+          file: ${{ matrix.service == 'cartservice' && './src/cartservice/src/Dockerfile' || format('./src/{0}/Dockerfile', matrix.service) }}
+          push: true
           tags: |
             mohamedsharaf123/${{ matrix.service }}:latest
             mohamedsharaf123/${{ matrix.service }}:${{ github.sha }}
