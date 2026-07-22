@@ -1,4 +1,4 @@
-name: Google Boutique Microservices CI/CD
+name: CI/CD Pipeline - Google Online Boutique
 
 on:
   push:
@@ -6,64 +6,76 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository_owner }}/boutique
-
 jobs:
-  build-and-push-services:
+  # ==========================================
+  # 🛠️ JOB 1: Build & Push Images (Matrix)
+  # ==========================================
+  build-and-push:
     name: Build & Push Microservices
     runs-on: ubuntu-latest
-    
     strategy:
       fail-fast: false
       matrix:
         service:
-          - emailservice
+          - adservice
+          - cartservice
           - checkoutservice
-          - recommendation-service
+          - currencyservice
+          - emailservice
           - frontend
+          - loadgenerator
           - paymentservice
           - productcatalogservice
-          - cartservice
-          - loadgenerator
-          - currencyservice
+          - recommendationservice
           - shippingservice
-          - adservice
-
-    permissions:
-      contents: read
-      packages: write
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry (GHCR)
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract Docker Metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}
-          tags: |
-            type=raw,value=latest
-            type=sha,format=short
-
-      - name: Build and Push Service Image
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./src/${{ matrix.service }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=${{ matrix.service }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+          push: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
+
+  # ==========================================
+  # 🚀 JOB 2: Deploy to AWS EC2 via SSH
+  # ==========================================
+  deploy-to-ec2:
+    name: Deploy to AWS EC2
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    # يشتغل فقط عند الـ Push على الفرع الرئيسي main
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: SSH and Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 1. التأكد من وجود مجلد المشروع أو عمل clone
+            if [ ! -d "~/microservices-demo" ]; then
+              git clone https://github.com/${{ github.repository }}.git ~/microservices-demo
+            fi
+            
+            cd ~/microservices-demo
+            
+            # 2. تحديث الكود من الجيت هب
+            git pull origin main
+            
+            # 3. سحب الصور الجديدة وتشغيلها
+            docker compose pull
+            docker compose up -d --remove-orphans
